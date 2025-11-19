@@ -1,21 +1,38 @@
 'use client';
 
+import { useState, Dispatch, SetStateAction } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronDown, Filter, X } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronDown, X } from 'lucide-react';
+
+interface FilterState {
+  category: string;
+  gender: string;
+  device: string;
+  payment: string;
+  startDate: string;
+  endDate: string;
+}
 
 interface FilterPanelProps {
-  filters: Record<string, string>;
-  setFilters: (filters: Record<string, string>) => void;
-  filterOptions: Record<string, string[]>;
+  filters: FilterState;
+  setFilters: Dispatch<SetStateAction<FilterState>>;
+  filterOptions: {
+    categories?: string[];
+    genders?: string[];
+    devices?: string[];
+    paymentMethods?: string[];
+  };
 }
 
 export default function FilterPanel({ filters, setFilters, filterOptions }: FilterPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleFilterChange = (key: string, value: string) => {
-    setFilters({ ...filters, [key]: value });
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [key]: value,
+    }));
   };
 
   const handleReset = () => {
@@ -29,118 +46,128 @@ export default function FilterPanel({ filters, setFilters, filterOptions }: Filt
     });
   };
 
-  const activeFilters = Object.values(filters).filter((v) => v && v !== 'all').length;
+  const activeFilters = Object.entries(filters).filter(
+    ([key, value]) => value !== 'all' && value !== ''
+  ).length;
 
   return (
-    <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+    <Card>
       <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-chart-1" />
-            <h3 className="font-semibold text-foreground">Filters</h3>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="flex items-center gap-2 font-semibold text-foreground hover:text-chart-1 transition-colors"
+            >
+              <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+              Filters {activeFilters > 0 && <span className="text-xs bg-chart-1 text-white px-2 py-1 rounded-full">{activeFilters}</span>}
+            </button>
             {activeFilters > 0 && (
-              <span className="bg-chart-1 text-white text-xs font-medium px-2 py-1 rounded-full">
-                {activeFilters}
-              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleReset}
+                className="text-xs"
+              >
+                <X className="h-4 w-4 mr-1" />
+                Clear All
+              </Button>
             )}
           </div>
-          {activeFilters > 0 && (
-            <Button variant="ghost" size="sm" onClick={handleReset} className="text-muted-foreground hover:text-foreground">
-              Reset
-            </Button>
+
+          {isOpen && (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4 border-t border-border">
+              {/* Category Filter */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-foreground">Category</label>
+                <select
+                  value={filters.category}
+                  onChange={(e) => handleFilterChange('category', e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                >
+                  <option value="all">All Categories</option>
+                  {filterOptions.categories?.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Gender Filter */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-foreground">Gender</label>
+                <select
+                  value={filters.gender}
+                  onChange={(e) => handleFilterChange('gender', e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                >
+                  <option value="all">All Genders</option>
+                  {filterOptions.genders?.map((gender) => (
+                    <option key={gender} value={gender}>
+                      {gender}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Device Filter */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-foreground">Device</label>
+                <select
+                  value={filters.device}
+                  onChange={(e) => handleFilterChange('device', e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                >
+                  <option value="all">All Devices</option>
+                  {filterOptions.devices?.map((device) => (
+                    <option key={device} value={device}>
+                      {device}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Payment Method Filter */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-foreground">Payment Method</label>
+                <select
+                  value={filters.payment}
+                  onChange={(e) => handleFilterChange('payment', e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                >
+                  <option value="all">All Methods</option>
+                  {filterOptions.paymentMethods?.map((method) => (
+                    <option key={method} value={method}>
+                      {method}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Start Date Filter */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-foreground">Start Date</label>
+                <input
+                  type="date"
+                  value={filters.startDate}
+                  onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                />
+              </div>
+
+              {/* End Date Filter */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-foreground">End Date</label>
+                <input
+                  type="date"
+                  value={filters.endDate}
+                  onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                />
+              </div>
+            </div>
           )}
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-          {/* Category Filter */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Product Category</label>
-            <select
-              value={filters.category}
-              onChange={(e) => handleFilterChange('category', e.target.value)}
-              className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-chart-1"
-            >
-              <option value="all">All Categories</option>
-              {filterOptions.categories?.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Gender Filter */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Gender</label>
-            <select
-              value={filters.gender}
-              onChange={(e) => handleFilterChange('gender', e.target.value)}
-              className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-chart-1"
-            >
-              <option value="all">All</option>
-              {filterOptions.genders?.map((gender) => (
-                <option key={gender} value={gender}>
-                  {gender}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Device Filter */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Device Type</label>
-            <select
-              value={filters.device}
-              onChange={(e) => handleFilterChange('device', e.target.value)}
-              className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-chart-1"
-            >
-              <option value="all">All Devices</option>
-              {filterOptions.devices?.map((device) => (
-                <option key={device} value={device}>
-                  {device}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Payment Filter */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Payment Method</label>
-            <select
-              value={filters.payment}
-              onChange={(e) => handleFilterChange('payment', e.target.value)}
-              className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-chart-1"
-            >
-              <option value="all">All Methods</option>
-              {filterOptions.paymentMethods?.map((method) => (
-                <option key={method} value={method}>
-                  {method}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Start Date */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Start Date</label>
-            <input
-              type="date"
-              value={filters.startDate}
-              onChange={(e) => handleFilterChange('startDate', e.target.value)}
-              className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-chart-1"
-            />
-          </div>
-
-          {/* End Date */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">End Date</label>
-            <input
-              type="date"
-              value={filters.endDate}
-              onChange={(e) => handleFilterChange('endDate', e.target.value)}
-              className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-chart-1"
-            />
-          </div>
         </div>
       </CardContent>
     </Card>

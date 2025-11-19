@@ -45,15 +45,15 @@ export async function GET(request: NextRequest) {
     });
 
     // Calculate metrics
-    const totalSales = filteredOrders.reduce((sum, order) => sum + order.sales, 0);
-    const totalProfit = filteredOrders.reduce((sum, order) => sum + order.profit, 0);
+    const totalSales = filteredOrders.reduce((sum: number, order: any) => sum + order.sales, 0);
+    const totalProfit = filteredOrders.reduce((sum: number, order: any) => sum + order.profit, 0);
     const orderCount = filteredOrders.length;
-    const avgAging = orderCount > 0 ? filteredOrders.reduce((sum, order) => sum + order.aging, 0) / orderCount : 0;
+    const avgAging = orderCount > 0 ? filteredOrders.reduce((sum: number, order: any) => sum + order.aging, 0) / orderCount : 0;
 
     // Group data for charts
     const salesByCategory = Object.values(
       filteredOrders.reduce(
-        (acc: any, order) => {
+        (acc: any, order: any) => {
           if (!acc[order.productCategory]) {
             acc[order.productCategory] = { category: order.productCategory, sales: 0, profit: 0 };
           }
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
 
     const salesByDevice = Object.values(
       filteredOrders.reduce(
-        (acc: any, order) => {
+        (acc: any, order: any) => {
           if (!acc[order.deviceType]) {
             acc[order.deviceType] = { name: order.deviceType, value: 0 };
           }
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
 
     const salesByGender = Object.values(
       filteredOrders.reduce(
-        (acc: any, order) => {
+        (acc: any, order: any) => {
           if (!acc[order.gender]) {
             acc[order.gender] = { name: order.gender, value: 0 };
           }
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
 
     const profitByPayment = Object.values(
       filteredOrders.reduce(
-        (acc: any, order) => {
+        (acc: any, order: any) => {
           if (!acc[order.paymentMethod]) {
             acc[order.paymentMethod] = { paymentMethod: order.paymentMethod, profit: 0, orderCount: 0 };
           }
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
 
     const ordersByPriority = Object.values(
       filteredOrders.reduce(
-        (acc: any, order) => {
+        (acc: any, order: any) => {
           if (!acc[order.orderPriority]) {
             acc[order.orderPriority] = { name: order.orderPriority, value: 0 };
           }
@@ -153,10 +153,10 @@ export async function GET(request: NextRequest) {
         avgAging,
       },
       filterOptions: {
-        categories: categories.map((c) => c.productCategory),
-        genders: genders.map((g) => g.gender),
-        devices: devices.map((d) => d.deviceType),
-        paymentMethods: paymentMethods.map((p) => p.paymentMethod),
+        categories: categories.map((c: any) => c.productCategory),
+        genders: genders.map((g: any) => g.gender),
+        devices: devices.map((d: any) => d.deviceType),
+        paymentMethods: paymentMethods.map((p: any) => p.paymentMethod),
       },
     });
   } catch (error) {

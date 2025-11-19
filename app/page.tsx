@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown, TrendingUp, ShoppingCart, DollarSign, Clock } from 'lucide-react';
 import FilterPanel from './components/filter-panel';
 import MetricsGrid from './components/metrics-grid';
-import ChartGrid from   './components/chart-grid';
+import ChartGrid from './components/chart-grid';
 import { useAnalyticsData } from '@/hooks/use-analytics-data';
 
 const COLORS = ['#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981'];
@@ -58,7 +58,11 @@ export default function Dashboard() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Filter Panel */}
         <div className="mb-8">
-          <FilterPanel filters={filters} setFilters={setFilters} filterOptions={filterOptions} />
+          <FilterPanel 
+            filters={filters} 
+            setFilters={setFilters} 
+            filterOptions={filterOptions} 
+          />
         </div>
 
         {/* Error State */}
